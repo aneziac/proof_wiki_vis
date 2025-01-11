@@ -10,22 +10,44 @@ class PageNode:
     understood:     bool
     dependencies:   list[list[str]]
 
+@dataclass
+class HTMLChunk:
+    identifier: str
+    content:    str
+    parser:     bs
+
 url_to_node = {}
 DOMAIN = "https://proofwiki.org"
+VALID_IDS = [
+    "Theorem",
+    "Proof",
+    "Proof 1",
+    "Proof 2"
+]
+
+
 
 
 def ParsePage(url : str) -> None:
     response    = requests.get(url)
     data        = bs(response.content, 'html.parser')
     chunks      = GetChunks(data)
+    pageName    = chunks[0].content
+    pageType    = chunks[0].identifier
     depChunks   = []
 
     for chunk in chunks:
-        deps = GetDependencies(chunk)
+        deps = GetDependencies(chunk.parser)
         deps = [DOMAIN + dep for dep in deps]
         depChunks.append(deps)
 
-    pageName, pageType = GetMeta(chunks[0])
+    # unique_ = []
+    # for item in my_list:
+    #     if item not in unique_list:
+    #         unique_list.append(item)
+
+    for dep in depChunks[1]:
+        print(dep)
 
     pageNode = PageNode(
         resultType      = pageType,
@@ -43,12 +65,13 @@ def ParsePage(url : str) -> None:
                 ParsePage(dep)
 
 
-def GetChunks(html : bs) -> list[bs]:
+def GetChunks(html : bs) -> list[HTMLChunk]:
     headings = html.find_all('h2')
     chunks = []
 
     for i in range(len(headings)):
         start_tag = headings[i]
+
 
         if i + 1 < len(headings):
             end_tag = headings[i + 1]
@@ -61,19 +84,57 @@ def GetChunks(html : bs) -> list[bs]:
                 break
             chunk.append(str(element))
 
-        chunks.append(chunk)
+        chunk = bs(''.join(chunk), 'html.parser')
+        chunk = GenChunk(chunk)
+        if chunk.identifier in VALID_IDS:
+            chunks.append(chunk)
 
-    html_content = ''.join(chunks[0])
-    html_parser = bs(html_content, 'html.parser')
-    print((html_parser))
+    for chunk in chunks:
+        print("------------------------------------------------------------")
+        # print(chunk.identifier, chunk.content)
+        # print(chunk.parser)
 
 
-    return []
+    return chunks
 
-def GetDependencies(chunk : bs) -> list[str]:
-    return []
+
+
+def GenChunk(html : bs) -> HTMLChunk:
+    header = html.find('h2')
+    span = header.find('span')
+    htmlChunk = None
+
+    if span:
+        htmlChunk = HTMLChunk(
+            identifier = span.get('id'),
+            content = span.get_text(),
+            parser = html
+        )
+    else:
+        htmlChunk = HTMLChunk(
+            identifier = "",
+            content = "",
+            parser = html
+        )
+
+    return htmlChunk
+
+
+
+def GetDependencies(html : bs) -> list[str]:
+    anchors = html.find_all('a')
+
+    hrefs = []
+    for anchor in anchors:
+        hrefs.append(anchor['href'])
+
+    print(hrefs)
+    return hrefs
+
+
 
 def GetMeta(statement : bs) -> tuple[str, str]:
     return "", ""
+
 
 ParsePage("https://proofwiki.org/wiki/Chinese_Remainder_Theorem")
