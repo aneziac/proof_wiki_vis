@@ -15,10 +15,10 @@
 </div>
 
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import * as d3 from 'd3';
+import { onMount } from 'svelte';
+import * as d3 from 'd3';
 
-    onMount(() => {
-        d3.select('body').selectAll("svg").remove();
-    })
+onMount(() => {
+    d3.select('body').selectAll("svg").remove();
+})
 </script>
