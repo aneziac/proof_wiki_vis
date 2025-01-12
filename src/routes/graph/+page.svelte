@@ -15,9 +15,10 @@ onMount(async () => {
 
     d3.select('body').selectAll("svg").remove();
 
-    // Specify the dimensions of the chart.
-    const width = 900;
-    const height = 900;
+    const UNSELECT_COLOR    = "#AAA";
+    const SELECT_COLOR      = "#FFF";
+    const UNSELECT_OP       = 0.6;
+    const SELECT_OP         = 0.9;
 
     // Specify the color scale.
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -26,6 +27,34 @@ onMount(async () => {
     // so that re-evaluating this cell produces the same result.
     const links = data.links.map(d => ({...d}));
     const nodes = data.nodes.map(d => ({...d}));
+
+    // const adjacencyMap = new Map<number, Set<number>>();
+    // links.forEach(link => {
+    //     if (!adjacencyMap.has(link.source)) {
+    //         adjacencyMap.set(link.source, new Set());
+    //     }
+    //     if (!adjacencyMap.has(link.target)) {
+    //         adjacencyMap.set(link.target, new Set());
+    //     }
+    //     adjacencyMap.get(link.source)?.add(link.target);
+    //     adjacencyMap.get(link.target)?.add(link.source);
+    // });
+
+    const outgoingMap = new Map<number, Set<number>>();
+    const incomingMap = new Map<number, Set<number>>();
+    links.forEach(link => {
+        // Add to outgoing map (source -> target)
+        if (!outgoingMap.has(link.source)) {
+            outgoingMap.set(link.source, new Set());
+        }
+        outgoingMap.get(link.source)?.add(link.target);
+
+        // Add to incoming map (target -> source)
+        if (!incomingMap.has(link.target)) {
+            incomingMap.set(link.target, new Set());
+        }
+        incomingMap.get(link.target)?.add(link.source);
+    });
 
     // Create a simulation with several forces.
     const simulation = d3.forceSimulation(nodes)
@@ -36,37 +65,48 @@ onMount(async () => {
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
-        .scaleExtent([0.2, 2])
-        // .translateExtent([[0, 0], [width * 5, height * 5]])
-        .on('zoom', e => {
-            d3.selectAll('g')
-                .attr('transform', e.transform);
-        });
+
+    const updateChartSize = () => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        const zoom = d3.zoom<SVGSVGElement, unknown>()
+            .scaleExtent([0.2, 2])
+            // .translateExtent([[0, 0], [width * 5, height * 5]])
+            .on('zoom', e => {
+                d3.selectAll('g')
+                    .attr('transform', e.transform);
+            });
+
+        const svg = d3.select("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [-width / 2, -height / 2, width, height])
+            .call(zoom);
+    };
 
     // Create the SVG container.
     const svg = d3.select('body')
         .append('svg')
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [-width / 2, -height / 2, width, height])
-        .attr("style", "width: 100%; height: 100%;")
-        .call(zoom)
         .append("svg:g")
-        .attr("transform","scale(.5,.5)");
+        .attr("style", "width: 100%; height: 100%;")
+        .attr("transform","scale(.5, .5)");
+
+    updateChartSize();
+    window.addEventListener('resize', updateChartSize);
 
 
     // Add a line for each link, and a circle for each node.
     const link = svg.append("g")
-        .attr("stroke", "#AAA")
-        .attr("stroke-opacity", 0.7)
+        .attr("stroke", UNSELECT_COLOR)
+        .attr("stroke-opacity", UNSELECT_OP)
         .selectAll("line")
         .data(links)
         .join("line")
         .attr("stroke-width", d => 3);
 
     const node = svg.append("g")
-        .attr("stroke", "#fff")
+        .attr("stroke", "#FFF")
         .attr("stroke-width", 1.5)
         .selectAll("circle")
         .data(nodes)
@@ -74,6 +114,19 @@ onMount(async () => {
         .attr("r", 6)
         .attr("fill", d => color(d.resultType))
         .on("mouseenter", (_, hoveredNode: Node) => {
+
+            // const adjacentNodes = new Set();
+            // data.links.forEach(link => {
+            //     if (link.source === hoveredNode.id) {
+            //         adjacentNodes.add(link.target);
+            //     } else if (link.target === hoveredNode.id) {
+            //         adjacentNodes.add(link.source);
+            //     }
+            // });
+            // const adjacentNodes = adjacencyMap.get(hoveredNode.id) || new Set<number>();
+            const inAdjacents = incomingMap.get(hoveredNode.id) || new Set<number>();
+            const outAdjacents = outgoingMap.get(hoveredNode.id) || new Set<number>();
+
             // @ts-ignore
             link.style('stroke-width', (edge: OverwrittenLink) => {
                 if   (hoveredNode === edge.source
@@ -86,18 +139,33 @@ onMount(async () => {
 
             // @ts-ignore
             link.style('stroke', (edge: OverwrittenLink) => {
-                return edge.source === hoveredNode // ||
-                    //    edge.target === hoveredNode ? edge.color : colors.gray;
+                return edge.source === hoveredNode ||
+                    edge.target === hoveredNode ? SELECT_COLOR : UNSELECT_COLOR;
             });
 
-            // node.style('fill', (otherNode: Node) => {
-            //     let sameNode = hoveredNode === otherNode;
-            //     let adjacentNode = data.nodes[hoveredNode.id].adjacent.includes(otherNode.id)
+            // @ts-ignore
+            link.style('stroke-opacity', (edge: OverwrittenLink) => {
+                return edge.source === hoveredNode ||
+                    edge.target === hoveredNode ? SELECT_OP : UNSELECT_OP;
+            });
 
-            //     if (!sameNode && !adjacentNode) {
-            //         return '#808080';
-            //     }
-            // });
+            node.attr('r', (otherNode: Node) => {
+                return otherNode === hoveredNode ? 10 : 6;
+            });
+
+            // @ts-ignore
+            node.style('fill', (otherNode: Node) => {
+                let sameNode = hoveredNode === otherNode;
+                let inAdjacent = inAdjacents.has(otherNode.id)
+                let outAdjacent = outAdjacents.has(otherNode.id)
+
+                if (!sameNode && !inAdjacent) {
+                    if (outAdjacent) {
+                        return '#FFF';
+                    }
+                    return '#808080';
+                }
+            });
 
             // if (hoveredNode.name.includes(dept.toUpperCase())) {
             //     activeNode.value = { web: websiteData[hoveredNode.name], api: apiData[hoveredNode.name] };
@@ -105,9 +173,12 @@ onMount(async () => {
         })
         .on("mouseout", () => {
             link.style('stroke-width', 4);
-            // link.style('stroke', edge => {
-            //     return edge.color;
-            // });
+            link.style('stroke', edge => {
+                return "#AAA";
+            });
+            node.attr('r', node => {
+                return 6;
+            });
             node.style('fill', node => {
                 return color(node.resultType);
             });
