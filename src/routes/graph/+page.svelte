@@ -2,27 +2,6 @@
 import { onMount } from 'svelte';
 import * as d3 from 'd3';
 
-// function loadData(url: RouteParams): void {
-//     let major: string | undefined = undefined;
-//     if (Object.keys(url).length === 2) {
-//         major = url.major as string;
-//     }
-//     const dept = url.dept as string;
-
-//     d3.json(`/data/website/${dept}.json`).then(f => {
-//         d3.json(`/data/api/${dept}.json`).then(g => {
-//             if (major) {
-//                 d3.json(`/data/majors/${dept}.json`).then(h => {
-//                     const majorCourses = getMajorCourses(h as MajorJSON, major!);
-//                     loadGraph(dept, f as WebsiteCourseJSON, g as APICourseJSON, majorCourses);
-//                 });
-//             } else {
-//                 loadGraph(dept, f as WebsiteCourseJSON, g as APICourseJSON);
-//             }
-//         });
-//     });
-// }
-
 interface Node {
     id: string,
     group: string,
@@ -36,49 +15,15 @@ interface Link {
     value: number
 }
 
+interface Graph {
+    nodes: Node[]
+    links: Link[]
+}
+
 onMount(async () => {
-    const data = await d3.json('/data/graph.json');
+    const data = await d3.json('/data/graph.json') as Graph;
 
     d3.select('body').selectAll("svg").remove();
-
-    // // Data for the bar chart
-    // const data = [30, 86, 168, 281, 303, 365];
-
-    // // Dimensions
-    // const width = 500;
-    // const height = 300;
-    // const barWidth = width / data.length;
-
-    // // Create SVG container
-    // const svg = d3
-    //     .select("body")
-    //     .append("svg")
-    //     .attr("width", width)
-    //     .attr("height", height);
-
-    // // Create bars
-    // svg
-    //     .selectAll("rect")
-    //     .data(data)
-    //     .enter()
-    //     .append("rect")
-    //     .attr("x", (_, i) => i * barWidth)
-    //     .attr("y", (d) => height - d)
-    //     .attr("width", barWidth - 2)
-    //     .attr("height", (d) => d)
-    //     .attr("fill", "steelblue");
-
-    // // Add labels
-    // svg
-    //     .selectAll("text")
-    //     .data(data)
-    //     .enter()
-    //     .append("text")
-    //     .attr("x", (_, i) => i * barWidth + barWidth / 2)
-    //     .attr("y", (d) => height - d - 5)
-    //     .attr("text-anchor", "middle")
-    //     .text((d) => d.toString())
-    //     .attr("fill", "black");
 
     // Specify the dimensions of the chart.
     const width = 928;
@@ -182,7 +127,7 @@ onMount(async () => {
     // stop naturally, but it’s a good practice.)
     // invalidation.then(() => simulation.stop());
 
-    return svg.node();
+    // return svg.node();
 });
 
 // Clean up the SVG when the component is destroyed
