@@ -194,7 +194,10 @@ onMount(async () => {
 
     function formatDeps(depChunks: string[][]) {
         var formatted = "<hr/>";
-        console.log(depChunks);
+        if (depChunks.length == 0) {
+            formatted += "<p>No dependencies</p>";
+            return formatted;
+        }
         for (let i = 0; i < depChunks.length; i++) {
             const dependencies = depChunks[0];
             var header = "";
@@ -212,7 +215,7 @@ onMount(async () => {
             for (let j = 0; j < dependencies.length; j++) {
                 const dep = dependencies[j];
                 const currNode = id_to_node.get(dep);
-                chunk += `<li class="list-disc">${currNode.name}</li>`
+                chunk += `<li class="list-disc"><a href="${dep}"  style="color: blue;" target="_blank">${currNode.name}</a></li>`
             }
             chunk += "</ul>";
             formatted += chunk;
@@ -243,25 +246,25 @@ onMount(async () => {
         // Append the large info menu
         d3.select('body').append("div")
             .attr("class", "info-box")
-            .attr("style", `position: fixed; 
-                            top: 50%; left: 50%; 
+            .attr("style", `position: fixed;
+                            top: 50%; left: 50%;
                             transform: translate(-50%, -50%);
                             width: 60vw; height: 70vh;
                             background: rgba(255, 255, 255, 0.9); 
-                            color: black; 
-                            padding: 20px;
+                            color: black;
+                            padding: 50px;
                             border-radius: 10px;
                             z-index: 1000;
                             box-shadow: 0px 0px 10px rgba(0,0,0,0.3); 
                             overflow-y: auto;`)
-            .html(`<h2>${d.name} (${d.resultType})</h2>
+            .html(`<h2><a href="${d.id}" target="_blank">${d.name} (${d.resultType})</a></h2>
                     ${formatDeps(d.dependencies)}
                    <button id="close-menu" style="
                             position: absolute; 
                             top: 10px; right: 20px; 
-                            background: red; 
-                            color: white; 
-                            border: none; 
+                            background: red;
+                            color: white;
+                            border: none;
                             padding: 5px 10px; 
                             cursor: pointer;
                             font-size: 16px;
