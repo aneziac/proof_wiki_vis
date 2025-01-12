@@ -10,6 +10,7 @@ export interface Node {
     name: string,
     id: string, // url
     understood: boolean,
+    dependencies: string[][],
 }
 
 interface Link {
