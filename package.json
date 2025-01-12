@@ -50,6 +50,7 @@
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.6.13",
+    "flowbite-svelte-icons": "^2.0.2",
     "fuse.js": "^7.0.0"
   }
 }
