@@ -31,6 +31,8 @@
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.36.0",
+    "flowbite": "^2.5.2",
+    "flowbite-svelte": "^0.47.4",
     "globals": "^15.0.0",
     "mathlifier": "^2.0.3",
     "postcss": "8.4.49",
@@ -47,6 +49,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@floating-ui/dom": "1.6.13"
+    "@floating-ui/dom": "1.6.13",
+    "flowbite-svelte-icons": "^2.0.2",
+    "fuse.js": "^7.0.0"
   }
 }

@@ -1,0 +1,72 @@
+{
+    "links": [
+        {
+            "source": "https://proofwiki.org/wiki/Chinese_Remainder_Theorem",
+            "target": "https://proofwiki.org/wiki/Integer_Coprime_to_all_Factors_is_Coprime_to_Whole"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integer_Coprime_to_all_Factors_is_Coprime_to_Whole",
+            "target": "https://proofwiki.org/wiki/Integer_Combination_of_Coprime_Integers"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Chinese_Remainder_Theorem",
+            "target": "https://proofwiki.org/wiki/Solution_of_Linear_Congruence"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Chinese_Remainder_Theorem",
+            "target": "https://proofwiki.org/wiki/Euclid%27s_Lemma"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Euclid%27s_Lemma",
+            "target": "https://proofwiki.org/wiki/Integers_are_Euclidean_Domain"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_are_Euclidean_Domain",
+            "target": "https://proofwiki.org/wiki/Integers_form_Ordered_Integral_Domain"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_form_Ordered_Integral_Domain",
+            "target": "https://proofwiki.org/wiki/Integers_form_Integral_Domain"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_form_Integral_Domain",
+            "target": "https://proofwiki.org/wiki/Integers_form_Commutative_Ring_with_Unity"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_form_Commutative_Ring_with_Unity",
+            "target": "https://proofwiki.org/wiki/Integers_form_Commutative_Ring"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_form_Commutative_Ring",
+            "target": "https://proofwiki.org/wiki/Integers_under_Addition_form_Abelian_Group"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_under_Addition_form_Abelian_Group",
+            "target": "https://proofwiki.org/wiki/Natural_Numbers_under_Addition_form_Commutative_Semigroup"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_under_Addition_form_Abelian_Group",
+            "target": "https://proofwiki.org/wiki/Natural_Number_Addition_is_Cancellable"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Natural_Number_Addition_is_Cancellable",
+            "target": "https://proofwiki.org/wiki/Axiom:Naturally_Ordered_Semigroup_Axioms"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Natural_Number_Addition_is_Cancellable",
+            "target": "https://proofwiki.org/wiki/Principle_of_Mathematical_Induction_for_Peano_Structure"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Principle_of_Mathematical_Induction_for_Peano_Structure",
+            "target": "https://proofwiki.org/wiki/Axiom:Peano%27s_Axioms"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Integers_under_Addition_form_Abelian_Group",
+            "target": "https://proofwiki.org/wiki/Inverse_Completion_of_Commutative_Semigroup_is_Abelian_Group"
+        },
+        {
+            "source": "https://proofwiki.org/wiki/Inverse_Completion_of_Commutative_Semigroup_is_Abelian_Group",
+            "target": "https://proofwiki.org/wiki/Inverse_Completion_is_Commutative_Monoid"
+        }
+    ]
+}
