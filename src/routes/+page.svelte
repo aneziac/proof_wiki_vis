@@ -1,5 +1,3 @@
-<!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
-
 <script lang="ts">
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
@@ -40,20 +38,20 @@
 
 <div class="container h-full mx-auto flex justify-center items-center">
     <div class="space-y-5">
-        <h1 class="h1">Let's get cracking bones!</h1>
+        <h1 class="h1">Proof Wiki Visual Guide</h1>
     </div>
 </div>
 
-<div class="pt-10">
+<div class="pt-10 orbit-stabilizer">
     {@html display(eq1)}
-</div><div class="pt-10">
+</div><div class="pt-10 christoffel-1">
     {@html display(eq2)}
-</div><div class="pt-10">
+</div><div class="pt-10 christoffel-2">
     {@html display(eq3)}
-</div><div class="pt-10">
+</div><div class="pt-10 maxwell-eq">
     {@html display(eq4)}
-</div><div class="pt-10">
+</div><div class="pt-10 borsuk-ulam">
     {@html display(eq5)}
-</div><div class="pt-10">
+</div><div class="pt-10 lie-groups">
     {@html display(eq6)}
 </div>

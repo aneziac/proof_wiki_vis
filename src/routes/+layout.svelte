@@ -1,14 +1,14 @@
 <script lang="ts">
     import '../app.postcss'
+    import { ButtonGroup, Button } from 'flowbite-svelte';
 
-	let { children } = $props();
+    let { children } = $props();
 </script>
 
-<nav>
-	<a href="/">Home</a>
-	<a href="/graph">Graph</a>
-	<a href="/about">About</a>
-    <a href="/mathex">Math Example</a>
-</nav>
+<ButtonGroup class="w-full flex jutify-evenly">
+    <Button outline href="/">Home</Button>
+    <Button outline href="/graph">Graph</Button>
+    <Button outline href="/about">About</Button>
+</ButtonGroup>
 
 {@render children()}
