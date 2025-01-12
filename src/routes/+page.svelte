@@ -37,7 +37,7 @@
 
 
 <div class="container h-full mx-auto flex justify-center items-center">
-    <div class="space-y-5">
+    <div class="pt-20">
         <h1 class="h1">Proof Wiki Visual Guide</h1>
     </div>
 </div>
