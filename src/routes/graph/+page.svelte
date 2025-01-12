@@ -2,8 +2,6 @@
 import { type Graph, type Node } from './graphTypes';
 import { onMount } from 'svelte';
 import * as d3 from 'd3';
-	import { nonpassive } from 'svelte/legacy';
-	import { NONAME } from 'dns';
 
 let activeNode = null;
 
@@ -13,7 +11,7 @@ interface OverwrittenLink {
 }
 
 onMount(async () => {
-    const data = await d3.json('/data/pages.json') as Graph;
+    const data = await d3.json('/data/new_pages.json') as Graph;
 
     d3.select('body').selectAll("svg").remove();
 
@@ -173,27 +171,7 @@ onMount(async () => {
                     return '#808080';
                 }
             });
-
-            // if (hoveredNode.name.includes(dept.toUpperCase())) {
-            //     activeNode.value = { web: websiteData[hoveredNode.name], api: apiData[hoveredNode.name] };
-            // }
-        })
-        .on("mouseout", () => {
-            link.style('stroke-width', 4);
-            link.style('stroke', edge => {
-                return "#AAA";
-            });
-            node.attr('r', node => {
-                return 6;
-            });
-            node.style('fill', node => {
-                return color(node.resultType);
-            });
-
-            activeNode = null;
         });
-
-
 
     node.append("title")
         .text("");  // Remove the title element to prevent the default tooltip
@@ -212,97 +190,112 @@ onMount(async () => {
         .html(`${d.name}`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY + 10) + "px");
-});
+    });
 
-function floatWin(event : any, d : Node) {
-    // Remove any existing menu and backdrop
-    d3.select('.menu-backdrop').remove();
-    d3.select('.info-box').remove();
+    function formatDeps(depChunks: string[][]) {
+        var formatted = "<hr/>";
+        console.log(depChunks);
+        for (let i = 0; i < depChunks.length; i++) {
+            const dependencies = depChunks[0];
+            var header = "";
+            if (i == 0) {
+                header = "Statement";
+            } else {
+                if (depChunks.length <= 2){
+                    header = "Proof";
+                } else {
+                    header = `Proof ${i}`;
+                }
+            }
 
-    // Create a full-screen backdrop
-    d3.select('body').append("div")
-        .attr("class", "menu-backdrop")
-        .attr("style", `position: fixed; 
-                        top: 0; left: 0; 
-                        width: 100vw; height: 100vh; 
-                        background: rgba(0, 0, 0, 0.5); 
-                        z-index: 999;`)
-        .on("click", function() {
-            // Clicking the backdrop closes the menu
+            var chunk = `<h4>${header} dependencies</h4><ul>`;
+            for (let j = 0; j < dependencies.length; j++) {
+                const dep = dependencies[j];
+                const currNode = id_to_node.get(dep);
+                chunk += `<li class="list-disc">${currNode.name}</li>`
+            }
+            chunk += "</ul>";
+            formatted += chunk;
+        }
+
+        return formatted;
+    }
+
+    function floatWin(event : any, d : Node) {
+        // Remove any existing menu and backdrop
+        d3.select('.menu-backdrop').remove();
+        d3.select('.info-box').remove();
+
+        // Create a full-screen backdrop
+        d3.select('body').append("div")
+            .attr("class", "menu-backdrop")
+            .attr("style", `position: fixed; 
+                            top: 0; left: 0; 
+                            width: 100vw; height: 100vh; 
+                            background: rgba(0, 0, 0, 0.5); 
+                            z-index: 999;`)
+            .on("click", function() {
+                // Clicking the backdrop closes the menu
+                d3.select('.menu-backdrop').remove();
+                d3.select('.info-box').remove();
+            });
+
+        // Append the large info menu
+        d3.select('body').append("div")
+            .attr("class", "info-box")
+            .attr("style", `position: fixed; 
+                            top: 50%; left: 50%; 
+                            transform: translate(-50%, -50%);
+                            width: 60vw; height: 70vh;
+                            background: rgba(255, 255, 255, 0.9); 
+                            color: black; 
+                            padding: 20px;
+                            border-radius: 10px;
+                            z-index: 1000;
+                            box-shadow: 0px 0px 10px rgba(0,0,0,0.3); 
+                            overflow-y: auto;`)
+            .html(`<h2>${d.name} (${d.resultType})</h2>
+                    ${formatDeps(d.dependencies)}
+                   <button id="close-menu" style="
+                            position: absolute; 
+                            top: 10px; right: 20px; 
+                            background: red; 
+                            color: white; 
+                            border: none; 
+                            padding: 5px 10px; 
+                            cursor: pointer;
+                            font-size: 16px;
+                            border-radius: 5px;">X</button>`);
+
+        // Add event listener to close button
+        d3.select("#close-menu").on("click", function() {
             d3.select('.menu-backdrop').remove();
             d3.select('.info-box').remove();
         });
-
-    // Append the large info menu
-    d3.select('body').append("div")
-        .attr("class", "info-box")
-        .attr("style", `position: fixed; 
-                        top: 50%; left: 50%; 
-                        transform: translate(-50%, -50%);
-                        width: 60vw; height: 70vh;
-                        background: rgba(255, 255, 255, 0.9); 
-                        color: black; 
-                        padding: 20px;
-                        border-radius: 10px;
-                        z-index: 1000;
-                        box-shadow: 0px 0px 10px rgba(0,0,0,0.3); 
-                        overflow-y: auto;`)
-        .html(`<h2>Name: ${d.name}</h2>
-               <h3>Result Type: ${d.resultType}</h3>
-                ${formatDeps(d.dependencies)}
-               <button id="close-menu" style="
-                        position: absolute; 
-                        top: 10px; right: 20px; 
-                        background: red; 
-                        color: white; 
-                        border: none; 
-                        padding: 5px 10px; 
-                        cursor: pointer;
-                        font-size: 16px;
-                        border-radius: 5px;">X</button>`);
-
-    // Add event listener to close button
-    d3.select("#close-menu").on("click", function() {
-        d3.select('.menu-backdrop').remove();
-        d3.select('.info-box').remove();
-    });
-}
-
-function formatDeps(depChunks: string[][]) {
-    var formatted = "";
-    for (let i = 0; i < depChunks.length; i++) {
-        const dependencies = depChunks[0];
-        var header = "";
-        if (i == 0) {
-            header = "Statement";
-        } else {
-            if (depChunks.length <= 2){
-                header = "Proof";
-            } else {
-                header = `Proof ${i}`;
-            }
-        }
-
-        var chunk = `<h2>${header} dependencies</h2><ul>`;
-
-        for (const dep in dependencies) {
-            const currNode = id_to_node.get(dep);
-            chunk += `<li onCick=${floatWin(null, currNode)}>${currNode.name}</li>`
-        }
-        chunk += "</ul>";
     }
-}
 
-node.on("click", function(event, d) {
-    floatWin(event, d);
-});
-
+    node.on("click", function(event, d) {
+        floatWin(event, d);
+    });
 
 
-node.on("mouseout", function() {
-    // Remove the tooltip when mouse leaves
-    d3.select('.tooltip').remove();
-});
+
+    node.on("mouseout", function() {
+        // Remove the tooltip when mouse leaves
+        link.style('stroke-width', 4);
+        link.style('stroke', edge => {
+            return "#AAA";
+        });
+        node.attr('r', node => {
+            return 6;
+        });
+        node.style('fill', node => {
+            return color(node.resultType);
+        });
+
+        activeNode = null;
+        d3.select('.tooltip').remove();
+    });
 
 
     // Set the position attributes of links and nodes each time the simulation ticks.
