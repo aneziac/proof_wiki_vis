@@ -9,6 +9,8 @@
   let showSearch = $state(false); // State to track search bar visibility
   let searchQuery = $state(''); // State to bind the search input
 
+  let isHovered = false;
+
   // Function to toggle the visibility of the search bar when spacebar is pressed
   const handleKeydown = (event: KeyboardEvent) => {
     if (event.key === ' ') {
@@ -32,13 +34,13 @@
       return searchQuery ? fuse.search(searchQuery).map(result => result.item) : [];
     }); // Search results
 
+  let nodes = {};
+
   onMount(async () => {
     document.addEventListener('keydown', handleKeydown);
 
     data = await d3.json('/data/pages.json') as Graph;
-    // console.log($state.snapshot(data).nodes)
     ($state.snapshot(data).nodes).forEach((node) => {
-        console.log(node.name)
         fuse.add(node.name);
     })
 
@@ -54,7 +56,7 @@
     // The force simulation mutates links and nodes, so create a copy
     // so that re-evaluating this cell produces the same result.
     const links = data.links.map((d) => ({ ...d }));
-    const nodes = data.nodes.map((d) => ({ ...d }));
+    nodes = data.nodes.map((d) => ({ ...d }));
 
     // Create a simulation with several forces.
     const simulation = d3
@@ -151,6 +153,14 @@
       document.removeEventListener('keydown', handleKeydown);
     };
   });
+
+function handleClick(result) {
+  nodes.forEach((node) => {
+    if (result === node.name) {
+      console.log(node.x)
+    }
+  })
+}
 </script>
 
 {#if showSearch}
@@ -170,11 +180,14 @@
       <!-- Search Results -->
       <ul class="space-y-2">
         {#if results.length > 0}
-          {#each results.slice(0, maxResults) as result}
-            <li class="p-2 bg-gray-500 rounded shadow-sm text-white">
-              <strong>{result}</strong>
-            </li>
-          {/each}
+        {#each results.slice(0, maxResults) as result}
+        <li
+          class="p-2 bg-gray-500 rounded shadow-sm text-white hover:bg-gray-700 cursor-pointer"
+          on:click={() => handleClick(result)}
+        >
+          <strong>{result}</strong>
+        </li>
+      {/each}
         {:else}
           <li class="text-gray-500">No results found.</li>
         {/if}
@@ -182,3 +195,9 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .hover {
+    color: slategray
+  }
+</style>
