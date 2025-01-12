@@ -99,13 +99,22 @@ onMount(async () => {
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+        .scaleExtent([0.2, 2])
+        // .translateExtent([[0, 0], [width * 5, height * 5]])
+        .on('zoom', e => {
+            d3.selectAll('g')
+                .attr('transform', e.transform);
+        });
+
     // Create the SVG container.
     const svg = d3.select('body')
         .append('svg')
         .attr("width", width)
         .attr("height", height)
         .attr("viewBox", [-width / 2, -height / 2, width, height])
-        .attr("style", "max-width: 100%; height: auto;");
+        .attr("style", "max-width: 100%; height: auto;")
+        .call(zoom);
 
     // Add a line for each link, and a circle for each node.
     const link = svg.append("g")
