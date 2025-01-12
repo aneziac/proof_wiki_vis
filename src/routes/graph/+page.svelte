@@ -9,8 +9,8 @@ onMount(async () => {
     d3.select('body').selectAll("svg").remove();
 
     // Specify the dimensions of the chart.
-    const width = 928;
-    const height = 680;
+    const width = 900;
+    const height = 900;
 
     // Specify the color scale.
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -22,7 +22,9 @@ onMount(async () => {
 
     // Create a simulation with several forces.
     const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id))
+        .force("center", d3.forceCenter())
+        .force("link", d3.forceLink(links).id(d => d.id).strength(2))
+        .force("collide", d3.forceCollide(15).strength(1))
         .force("charge", d3.forceManyBody())
         .force("x", d3.forceX())
         .force("y", d3.forceY());
@@ -41,17 +43,20 @@ onMount(async () => {
         .attr("width", width)
         .attr("height", height)
         .attr("viewBox", [-width / 2, -height / 2, width, height])
-        .attr("style", "max-width: 100%; height: auto;")
-        .call(zoom);
+        .attr("style", "width: 100%; height: 100%;")
+        .call(zoom)
+        .append("svg:g")
+        .attr("transform","scale(.5,.5)");
+
 
     // Add a line for each link, and a circle for each node.
     const link = svg.append("g")
-        .attr("stroke", "#999")
-        .attr("stroke-opacity", 0.6)
+        .attr("stroke", "#AAA")
+        .attr("stroke-opacity", 0.7)
         .selectAll("line")
         .data(links)
         .join("line")
-        .attr("stroke-width", d => Math.sqrt(d.value));
+        .attr("stroke-width", d => 3);
 
     const node = svg.append("g")
         .attr("stroke", "#fff")
@@ -59,11 +64,11 @@ onMount(async () => {
         .selectAll("circle")
         .data(nodes)
         .join("circle")
-        .attr("r", 5)
-        .attr("fill", d => color(d.group));
+        .attr("r", 6)
+        .attr("fill", d => color(d.resultType));
 
     node.append("title")
-        .text(d => d.id);
+        .text(d => d.name);
 
     // Add a drag behavior.
     node.call(d3.drag()
