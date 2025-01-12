@@ -1,24 +1,7 @@
 <script lang="ts">
+import { type Graph } from './graphTypes';
 import { onMount } from 'svelte';
 import * as d3 from 'd3';
-
-interface Node {
-    id: string,
-    group: string,
-    radius: number,
-    citing_patents_count: number
-}
-
-interface Link {
-    source: string,
-    target: string,
-    value: number
-}
-
-interface Graph {
-    nodes: Node[]
-    links: Link[]
-}
 
 onMount(async () => {
     const data = await d3.json('/data/graph.json') as Graph;

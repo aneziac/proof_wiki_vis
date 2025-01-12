@@ -1,0 +1,112 @@
+{
+    "nodes": [
+        {
+            "resultType": "Theorem",
+            "name": "Chinese Remainder Theorem",
+            "url": "https://proofwiki.org/wiki/Chinese_Remainder_Theorem",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integer Coprime to all Factors is Coprime to Whole",
+            "url": "https://proofwiki.org/wiki/Integer_Coprime_to_all_Factors_is_Coprime_to_Whole",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integer Combination of Coprime Integers",
+            "url": "https://proofwiki.org/wiki/Integer_Combination_of_Coprime_Integers",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Solution of Linear Congruence",
+            "url": "https://proofwiki.org/wiki/Solution_of_Linear_Congruence",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Euclid's Lemma",
+            "url": "https://proofwiki.org/wiki/Euclid%27s_Lemma",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integers are Euclidean Domain",
+            "url": "https://proofwiki.org/wiki/Integers_are_Euclidean_Domain",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integers form Ordered Integral Domain",
+            "url": "https://proofwiki.org/wiki/Integers_form_Ordered_Integral_Domain",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integers form Integral Domain",
+            "url": "https://proofwiki.org/wiki/Integers_form_Integral_Domain",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integers form Commutative Ring with Unity",
+            "url": "https://proofwiki.org/wiki/Integers_form_Commutative_Ring_with_Unity",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integers form Commutative Ring",
+            "url": "https://proofwiki.org/wiki/Integers_form_Commutative_Ring",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Integers under Addition form Abelian Group",
+            "url": "https://proofwiki.org/wiki/Integers_under_Addition_form_Abelian_Group",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Natural Numbers under Addition form Commutative Semigroup",
+            "url": "https://proofwiki.org/wiki/Natural_Numbers_under_Addition_form_Commutative_Semigroup",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Natural Number Addition is Cancellable",
+            "url": "https://proofwiki.org/wiki/Natural_Number_Addition_is_Cancellable",
+            "understood": false
+        },
+        {
+            "resultType": "Axiom",
+            "name": "Naturally Ordered Semigroup Axioms",
+            "url": "https://proofwiki.org/wiki/Axiom:Naturally_Ordered_Semigroup_Axioms",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Principle of Mathematical Induction/Peano Structure",
+            "url": "https://proofwiki.org/wiki/Principle_of_Mathematical_Induction_for_Peano_Structure",
+            "understood": false
+        },
+        {
+            "resultType": "Axiom",
+            "name": "Peano's Axioms",
+            "url": "https://proofwiki.org/wiki/Axiom:Peano%27s_Axioms",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Inverse Completion of Commutative Semigroup is Abelian Group",
+            "url": "https://proofwiki.org/wiki/Inverse_Completion_of_Commutative_Semigroup_is_Abelian_Group",
+            "understood": false
+        },
+        {
+            "resultType": "Theorem",
+            "name": "Inverse Completion is Commutative Monoid",
+            "url": "https://proofwiki.org/wiki/Inverse_Completion_is_Commutative_Monoid",
+            "understood": false
+        }
+    ]
+}
