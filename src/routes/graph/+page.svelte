@@ -4,7 +4,7 @@ import { onMount } from 'svelte';
 import * as d3 from 'd3';
 
 onMount(async () => {
-    const data = await d3.json('/data/graph.json') as Graph;
+    const data = await d3.json('/data/pages.json') as Graph;
 
     d3.select('body').selectAll("svg").remove();
 
