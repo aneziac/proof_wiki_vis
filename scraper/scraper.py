@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup as bs
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+import re
+import json
 
 @dataclass
 class PageNode:
@@ -8,7 +10,11 @@ class PageNode:
     name:           str
     url:            str
     understood:     bool
-    dependencies:   list[list[str]]
+
+@dataclass
+class PageLink:
+    source: str
+    target: str
 
 @dataclass
 class HTMLChunk:
@@ -16,53 +22,91 @@ class HTMLChunk:
     content:    str
     parser:     bs
 
-url_to_node = {}
+urls_indexed = set()
 DOMAIN = "https://proofwiki.org"
 VALID_IDS = [
     "Theorem",
-    "Proof",
-    "Proof 1",
-    "Proof 2"
+    "Definition",
+    "Corollary",
+    "Proposition",
+    "Proof"
+]
+VALID_IDS_REGEX = '^(' + '|'.join(
+    re.escape(pattern.replace("*", ".*")) for pattern in VALID_IDS
+) + ')'
+
+INVALID_TYPES = [
+    "Definition",
+    "Special",
+    "Category",
+    "Mathematician",
+    "Talks",
+    "Talk",
+    "ProofWiki",
+    "Symbols",
+    "Template",
+    "Book",
+    "Help",
+    "Main_Page",
+    "File"
 ]
 
 
 
 
 def ParsePage(url : str) -> None:
+    print(f"----------------- started processing {url} -----------------")
     response    = requests.get(url)
     data        = bs(response.content, 'html.parser')
     chunks      = GetChunks(data)
-    pageName    = chunks[0].content
-    pageType    = chunks[0].identifier
     depChunks   = []
+
+    pageType, pageName = GetHeader(data)
+    if pageType == "":
+        if len(chunks) > 0:
+            pageType = chunks[0].identifier
+        else:
+            pageType = "Misc"
 
     for chunk in chunks:
         deps = GetDependencies(chunk.parser)
-        deps = [DOMAIN + dep for dep in deps]
-        depChunks.append(deps)
 
-    # unique_ = []
-    # for item in my_list:
-    #     if item not in unique_list:
-    #         unique_list.append(item)
+        unique_deps = []
+        for dep in deps:
+            if dep not in unique_deps:
+                unique_deps.append(dep)
 
-    for dep in depChunks[1]:
-        print(dep)
+        unique_deps = [DOMAIN + dep for dep in unique_deps]
+        depChunks.append(unique_deps)
 
+    # DEBUG
+    print(pageType, pageName)
+    if len(depChunks) > 0:
+        for dep in depChunks[0]:
+            print(dep)
+
+
+    # WRITE NODE
     pageNode = PageNode(
         resultType      = pageType,
         name            = pageName,
         url             = url,
         understood      = False,
-        dependencies    = depChunks
     )
-
-    url_to_node[url] = pageNode
+    write_to_json(asdict(pageNode), "page_nodes.json")
+    urls_indexed.add(url)
 
     for deps in depChunks:
         for dep in deps:
-            if dep not in url_to_node:
+            if dep not in urls_indexed:
+                pageLink = PageLink(
+                    source = url,
+                    target = dep
+                )
+                write_to_json(asdict(pageLink), "page_links.json")
                 ParsePage(dep)
+
+    print(f"----------------- stopped processing {url} -----------------")
 
 
 def GetChunks(html : bs) -> list[HTMLChunk]:
@@ -86,14 +130,11 @@ def GetChunks(html : bs) -> list[HTMLChunk]:
 
         chunk = bs(''.join(chunk), 'html.parser')
         chunk = GenChunk(chunk)
-        if chunk.identifier in VALID_IDS:
+
+        match = re.match(VALID_IDS_REGEX, chunk.identifier)
+        if match:
+            chunk.identifier = match.group(0)
             chunks.append(chunk)
-
-    for chunk in chunks:
-        print("------------------------------------------------------------")
-        # print(chunk.identifier, chunk.content)
-        # print(chunk.parser)
-
 
     return chunks
 
@@ -101,7 +142,8 @@ def GetChunks(html : bs) -> list[HTMLChunk]:
 
 def GenChunk(html : bs) -> HTMLChunk:
     header = html.find('h2')
-    span = header.find('span')
+    span = header.find('span') if header else None
+
     htmlChunk = None
 
     if span:
@@ -122,19 +164,44 @@ def GenChunk(html : bs) -> HTMLChunk:
 
 
 def GetDependencies(html : bs) -> list[str]:
-    anchors = html.find_all('a')
+    anchors = html.find_all('a', href=True)
 
-    hrefs = []
-    for anchor in anchors:
-        hrefs.append(anchor['href'])
+    hrefs = [
+        a['href'] for a in anchors
+        if a['href'].startswith('/wiki/') 
+        and not any(a['href'].startswith(f'/wiki/{unwanted}') for unwanted in INVALID_TYPES)
+        and a['href'].count('/') < 3
+        and '#' not in a['href']
+    ]
 
-    print(hrefs)
     return hrefs
 
 
 
-def GetMeta(statement : bs) -> tuple[str, str]:
-    return "", ""
+def GetHeader(html : bs) -> tuple[str, str]:
+    header = html.find('h1')
+
+    span_type = header.find('span', class_="mw-page-title-namespace") if header else None
+    span_name = header.find('span', class_="mw-page-title-main") if header else None
+
+    pageType = ""
+    pageName = ""
+
+    if span_type:
+        pageType = span_type.get_text()
+
+    if span_name:
+        pageName = span_name.get_text()
+
+    return pageType, pageName
+
+
+
+def write_to_json(data, filename):
+    with open(filename, 'a') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+        f.write(',\n')
+        # f.write('\n')
 
 
 ParsePage("https://proofwiki.org/wiki/Chinese_Remainder_Theorem")
