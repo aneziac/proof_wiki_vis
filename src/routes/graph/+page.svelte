@@ -1,7 +1,14 @@
 <script lang="ts">
-import { type Graph } from './graphTypes';
+import { type Graph, type Node } from './graphTypes';
 import { onMount } from 'svelte';
 import * as d3 from 'd3';
+
+let activeNode = null;
+
+interface OverwrittenLink {
+    source: Node,
+    target: Node
+}
 
 onMount(async () => {
     const data = await d3.json('/data/pages.json') as Graph;
@@ -65,7 +72,50 @@ onMount(async () => {
         .data(nodes)
         .join("circle")
         .attr("r", 6)
-        .attr("fill", d => color(d.resultType));
+        .attr("fill", d => color(d.resultType))
+        .on("mouseenter", (_, hoveredNode: Node) => {
+            // @ts-ignore
+            link.style('stroke-width', (edge: OverwrittenLink) => {
+                if   (hoveredNode === edge.source
+                   || hoveredNode === edge.target) {
+                    return 7;
+                } else {
+                    return 4;
+                }
+            });
+
+            // @ts-ignore
+            link.style('stroke', (edge: OverwrittenLink) => {
+                return edge.source === hoveredNode // ||
+                    //    edge.target === hoveredNode ? edge.color : colors.gray;
+            });
+
+            // node.style('fill', (otherNode: Node) => {
+            //     let sameNode = hoveredNode === otherNode;
+            //     let adjacentNode = data.nodes[hoveredNode.id].adjacent.includes(otherNode.id)
+
+            //     if (!sameNode && !adjacentNode) {
+            //         return '#808080';
+            //     }
+            // });
+
+            // if (hoveredNode.name.includes(dept.toUpperCase())) {
+            //     activeNode.value = { web: websiteData[hoveredNode.name], api: apiData[hoveredNode.name] };
+            // }
+        })
+        .on("mouseout", () => {
+            link.style('stroke-width', 4);
+            // link.style('stroke', edge => {
+            //     return edge.color;
+            // });
+            node.style('fill', node => {
+                return color(node.resultType);
+            });
+
+            activeNode = null;
+        });
+
+
 
     node.append("title")
         .text(d => d.name);

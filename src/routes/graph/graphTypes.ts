@@ -5,7 +5,7 @@
 //     citing_patents_count: number
 // }
 
-interface Node {
+export interface Node {
     resultType: string,
     name: string,
     id: string, // url
